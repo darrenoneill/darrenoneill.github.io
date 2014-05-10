@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Building an API with Django and GAE Cloud Endpoints - Darren O'Neill</title>
+  <meta name="author" content="Darren O'Neill">
+
+
+    
+<meta name="description" content="Latest blog posts and opinions from Darren O'Neill">
+
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link href="http://192.168.145.11/favicon.png" rel="icon">
+  <link href="http://192.168.145.11/theme/css/main.css" media="screen, projection"
+        rel="stylesheet" type="text/css">
+  <script src="http://192.168.145.11/theme/js/modernizr-2.0.js"></script>
+  <script src="http://192.168.145.11/theme/js/ender.js"></script>
+  <script src="http://192.168.145.11/theme/js/octopress.js" type="text/javascript"></script>
+
+  <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+  <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic"
+        rel="stylesheet" type="text/css">
+</head>
+
+<body>
+  <header role="banner"><hgroup>
+  <h1><a href="http://192.168.145.11/">Darren O'Neill</a></h1>
+</hgroup></header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+</ul>
+
+
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:192.168.145.11" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+
+<ul class="main-navigation">
+    <li><a href="/archives/">Archives</a></li>
+</ul></nav>
+  <div id="main">
+    <div id="content">
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Building an API with Django and GAE Cloud Endpoints</h1>
+      <p class="meta"><time datetime="2014-05-05T00:00:00" pubdate>Mon 05 May 2014</time></p>
+</header>
+
+  <div class="entry-content"><p>Typically when you build a Django site and you need to expose your application's
+data in the form of a RESTful API you would use something like the excellent
+<a href="http://www.django-rest-framework.org/">Django REST Framework</a>. However if you
+are hosting your site on
+<a href="https://developers.google.com/appengine/">Google App Engine</a> there is an
+alternative called <a href="https://developers.google.com/appengine/docs/python/endpoints/">Google Cloud Endpoints</a>
+that you should check out.</p>
+<p>Cloud Endpoints is a robust solution built on Google architecture that powers
+various Google APIs. It takes care of a lot of the hard work for you such as
+authentication via OAuth 2 and JSON templating and provides an explorer you can
+use to test your API in the browser.</p>
+<blockquote>
+<p>An Endpoints API is a remote procedure call (RPC) service that provides remote
+methods accessible to external clients. Each Endpoints API consists of an RPC
+service class that subclasses the ProtoRPC remote.Service class, and one or
+more methods. When you define a method, you must also define message classes
+for the requests coming into that method and the responses returned by it. A
+message class performs a mapping function so the incoming data can be
+extracted and supplied to the service method properly, or supplied properly to
+the outgoing response - (<a href="http://goo.gl/PrLm89">http://goo.gl/PrLm89</a>)</p>
+</blockquote>
+<p>Suppose you have your site up and running on App Engine, the project has two
+Django models called <code>Book</code> and <code>PublicationYear</code> and you
+need to create an API endpoint to list all books published in a particular year.
+Here is how you could go about it using Cloud Endpoints.</p>
+<p>To get started create a new directory where your Django apps reside and call it
+<code>api</code>. In here create three files: <code>messages.py</code>, <code>services.py</code> and
+<code>books_api.py</code>. Finally create the handler for the API in your <code>app.yaml</code> file
+and ensure the <code>DJANGO_SETTINGS_MODULE</code> environment variable is set.</p>
+<div class="highlight"><pre><span class="p-Indicator">-</span> <span class="l-Scalar-Plain">url</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">/_ah/spi/.*</span>
+  <span class="l-Scalar-Plain">script</span><span class="p-Indicator">:</span> <span class="l-Scalar-Plain">api.books_api.application</span>
+
+<span class="l-Scalar-Plain">env_variables</span><span class="p-Indicator">:</span>
+  <span class="l-Scalar-Plain">DJANGO_SETTINGS_MODULE</span><span class="p-Indicator">:</span> <span class="s">&#39;settings&#39;</span>
+</pre></div>
+
+
+<p>In <code>messages.py</code> create the ProtoRPC message classes. In this example a <code>Book</code>
+class should be created (if listing of publication years was also required, a
+<code>PublicationYear</code> class would also be needed). Rule of thumb is one Django model
+= one message class.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">protorpc</span> <span class="kn">import</span> <span class="n">messages</span>
+
+
+<span class="k">class</span> <span class="nc">Book</span><span class="p">(</span><span class="n">messages</span><span class="o">.</span><span class="n">Message</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Book ProtoRPC message</span>
+
+<span class="sd">    Book fields needed to define the schema for methods.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">title</span> <span class="o">=</span> <span class="n">messages</span><span class="o">.</span><span class="n">StringField</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">author</span> <span class="o">=</span> <span class="n">messages</span><span class="o">.</span><span class="n">StringField</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">ebook_available</span> <span class="o">=</span> <span class="n">messages</span><span class="o">.</span><span class="n">BooleanField</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">publication_year</span> <span class="o">=</span> <span class="n">messages</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="mi">4</span><span class="p">)</span>
+    <span class="c">#...</span>
+
+<span class="k">class</span> <span class="nc">BookCollection</span><span class="p">(</span><span class="n">messages</span><span class="o">.</span><span class="n">Message</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Collection of Books.&quot;&quot;&quot;</span>
+    <span class="n">books</span> <span class="o">=</span> <span class="n">messages</span><span class="o">.</span><span class="n">MessageField</span><span class="p">(</span><span class="n">Book</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">repeated</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">year</span> <span class="o">=</span> <span class="n">messages</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+
+
+<p>In <code>books_api.py</code> create each endpoint. Below the book listing view is provided.</p>
+<div class="highlight"><pre><span class="sd">&quot;&quot;&quot;Books API implemented using Google Cloud Endpoints.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">settings</span>
+<span class="kn">import</span> <span class="nn">endpoints</span>
+<span class="kn">from</span> <span class="nn">protorpc</span> <span class="kn">import</span> <span class="n">messages</span>
+<span class="kn">from</span> <span class="nn">protorpc</span> <span class="kn">import</span> <span class="n">message_types</span>
+<span class="kn">from</span> <span class="nn">protorpc</span> <span class="kn">import</span> <span class="n">remote</span>
+<span class="kn">from</span> <span class="nn">books.models</span> <span class="kn">import</span> <span class="n">Book</span>
+<span class="kn">from</span> <span class="nn">api</span> <span class="kn">import</span> <span class="n">services</span>
+<span class="kn">from</span> <span class="nn">api.messages</span> <span class="kn">import</span> <span class="n">BookCollection</span>
+
+
+<span class="n">package</span> <span class="o">=</span> <span class="s">&#39;Api&#39;</span>
+
+
+<span class="nd">@endpoints.api</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">&#39;books&#39;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s">&#39;v1&#39;</span><span class="p">,</span>
+               <span class="n">allowed_client_ids</span><span class="o">=</span><span class="p">[</span><span class="n">settings</span><span class="o">.</span><span class="n">GOOGLE_OAUTH2_CLIENT_ID</span><span class="p">,</span>
+                                   <span class="n">endpoints</span><span class="o">.</span><span class="n">API_EXPLORER_CLIENT_ID</span><span class="p">],</span>
+               <span class="n">scopes</span><span class="o">=</span><span class="p">[</span><span class="n">endpoints</span><span class="o">.</span><span class="n">EMAIL_SCOPE</span><span class="p">,</span> <span class="p">])</span>
+<span class="k">class</span> <span class="nc">BooksApi</span><span class="p">(</span><span class="n">remote</span><span class="o">.</span><span class="n">Service</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Books API v1.&quot;&quot;&quot;</span>
+
+    <span class="n">PUBLICATION_YEAR_RESOURCE</span> <span class="o">=</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">ResourceContainer</span><span class="p">(</span>
+        <span class="n">message_types</span><span class="o">.</span><span class="n">VoidMessage</span><span class="p">,</span>
+        <span class="n">year</span><span class="o">=</span><span class="n">messages</span><span class="o">.</span><span class="n">IntegerField</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">variant</span><span class="o">=</span><span class="n">messages</span><span class="o">.</span><span class="n">Variant</span><span class="o">.</span><span class="n">INT32</span><span class="p">))</span>
+
+    <span class="nd">@endpoints.method</span><span class="p">(</span><span class="n">PUBLICATION_YEAR_RESOURCE</span><span class="p">,</span> <span class="n">BookCollection</span><span class="p">,</span>
+                      <span class="n">path</span><span class="o">=</span><span class="s">&#39;list&#39;</span><span class="p">,</span> <span class="n">http_method</span><span class="o">=</span><span class="s">&#39;GET&#39;</span><span class="p">,</span>
+                      <span class="n">name</span><span class="o">=</span><span class="s">&#39;books.list&#39;</span><span class="p">)</span>
+    <span class="k">def</span> <span class="nf">book_list</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;List view endpoint.&quot;&quot;&quot;</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">&#39;year&#39;</span><span class="p">):</span>
+            <span class="n">book_list</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">filter</span><span class="p">(</span>
+                <span class="n">publication_year__year</span><span class="o">=</span><span class="n">request</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">book_list</span> <span class="o">=</span> <span class="n">Book</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">all</span><span class="p">()</span>
+
+        <span class="n">books</span> <span class="o">=</span> <span class="n">services</span><span class="o">.</span><span class="n">ApiUtils</span><span class="o">.</span><span class="n">serialize_books</span><span class="p">(</span><span class="n">book_list</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">BookCollection</span><span class="p">(</span><span class="n">books</span><span class="o">=</span><span class="n">books</span><span class="p">)</span>
+
+
+<span class="n">application</span> <span class="o">=</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">api_server</span><span class="p">([</span><span class="n">BooksApi</span><span class="p">],</span> <span class="n">restricted</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+
+
+<p>The <code>endpoints</code> and <code>protorpc</code> packages are provided by the GAE Python SDK.</p>
+<p>Authentication is required to access this endpoint, shown by the inclusion of
+the <code>allowed_client_ids</code> param. Make sure your OAuth settings are in your
+project <code>settings.py</code> file for this to work. <code>endpoints.API_EXPLORER_CLIENT_ID</code>
+can be included as an option if you wish to use the API explorer at
+<code>http://yourappname.appspot.com/_ah/api/explorer</code>.</p>
+<p>The resource container <code>PUBLICATION_YEAR_RESOURCE</code> passed to the endpoint allows
+for the publication year to be provided as part of the request querystring, for
+example <code>/_ah/api/books/v1/list?year=2005</code> will return all books published in
+2005.</p>
+<p>In <code>services.py</code> create any additional utility classes required. In the code
+snippet above <code>ApiUtils.serialize_books()</code> is referenced.</p>
+<div class="highlight"><pre><span class="kn">from</span> <span class="nn">django.forms.models</span> <span class="kn">import</span> <span class="n">model_to_dict</span>
+<span class="kn">from</span> <span class="nn">api.messages</span> <span class="kn">import</span> <span class="n">Book</span>
+
+
+<span class="k">class</span> <span class="nc">ApiUtils</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;Utility API functions.&quot;&quot;&quot;</span>
+
+    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">serialize_books</span><span class="p">(</span><span class="n">books</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Function to serialize a queryset of Book models.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            books: a queryset</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            A list of Book ProtoRPC messages</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">items</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">book</span> <span class="ow">in</span> <span class="n">books</span><span class="p">:</span>
+            <span class="n">item</span> <span class="o">=</span> <span class="n">model_to_dict</span><span class="p">(</span><span class="n">book</span><span class="p">,</span> <span class="n">fields</span><span class="o">=</span><span class="p">[</span>
+                <span class="s">&#39;title&#39;</span><span class="p">,</span> <span class="s">&#39;author&#39;</span><span class="p">,</span> <span class="s">&#39;ebook_available&#39;</span><span class="p">])</span>
+            <span class="n">item</span><span class="p">[</span><span class="s">&#39;publication_year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">book</span><span class="o">.</span><span class="n">publication_year</span><span class="o">.</span><span class="n">year</span>
+            <span class="n">items</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Book</span><span class="p">(</span><span class="o">**</span><span class="n">item</span><span class="p">))</span>
+
+        <span class="k">return</span> <span class="n">items</span>
+</pre></div>
+
+
+<p>In ApiUtils you could also add some authorization functions if required, i.e.
+does the authenticated user have an <code>@yourdomain.com</code> email address or are they
+in an approved list of users. Example:</p>
+<div class="highlight"><pre><span class="n">user</span> <span class="o">=</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">get_current_user</span><span class="p">()</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">user</span><span class="o">.</span><span class="n">email</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s">&#39;@yourdomain.com&#39;</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="n">endpoints</span><span class="o">.</span><span class="n">UnauthorizedException</span><span class="p">(</span><span class="s">&#39;Unauthorized user.&#39;</span><span class="p">)</span>
+</pre></div>
+
+
+<p>That's all that is required to get an API up and running using your existing
+Django models.</p>
+<p>You could improve this solution by using the Django paginator
+(<code>django.core.paginator.Paginator</code>) rather than returning all the books in one
+request. You would need to create a <code>PAGINATION_TOKEN_RESOURCE</code> and pass this
+into the endpoint so the user can provide a page number / token query param for
+each request.</p></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard">
+    Posted by <span class="fn">Darren O'Neill</span>
+  </span>
+<time datetime="2014-05-05T00:00:00" pubdate>Mon 05 May 2014</time>  <span class="categories">
+    <a class="category" href="http://192.168.145.11/tag/gae/">gae</a>
+    <a class="category" href="http://192.168.145.11/tag/app-engine/">app engine</a>
+    <a class="category" href="http://192.168.145.11/tag/django/">django</a>
+    <a class="category" href="http://192.168.145.11/tag/api/">api</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
+<aside class="sidebar">
+  <section>
+    <h1>Recent Posts</h1>
+    <ul id="recent_posts">
+      <li class="post">
+          <a href="http://192.168.145.11/post/django-api-gae-cloud-endpoints/">Building an API with Django and GAE Cloud Endpoints</a>
+      </li>
+      <li class="post">
+          <a href="http://192.168.145.11/post/sending-triggered-emails-with-django-celery-ses/">Sending triggered emails with Django using Celery and SES</a>
+      </li>
+      <li class="post">
+          <a href="http://192.168.145.11/post/real-time-web-apps-postgresql-and-node/">Real time web apps with PostgreSQL and Node.js</a>
+      </li>
+      <li class="post">
+          <a href="http://192.168.145.11/post/integrate-bugsnag-zf2/">Integrate Bugsnag into ZF2</a>
+      </li>
+      <li class="post">
+          <a href="http://192.168.145.11/post/timestamps-and-databases/">Timestamps and databases</a>
+      </li>
+    </ul>
+  </section>
+  <section>
+      
+    <h1>Categories</h1>
+    <ul id="recent_posts">
+        <li><a href="http://192.168.145.11/category/js/">js</a></li>
+        <li><a href="http://192.168.145.11/category/php/">php</a></li>
+        <li><a href="http://192.168.145.11/category/python/">python</a></li>
+    </ul>
+  </section>
+ 
+
+  <section>
+  <h1>Tags</h1>
+    <a href="http://192.168.145.11/tag/utc/">utc</a>,    <a href="http://192.168.145.11/tag/app-engine/">app engine</a>,    <a href="http://192.168.145.11/tag/geodjango/">geodjango</a>,    <a href="http://192.168.145.11/tag/postgresql/">postgresql</a>,    <a href="http://192.168.145.11/tag/error-handling/">error handling</a>,    <a href="http://192.168.145.11/tag/nodejs/">node.js</a>,    <a href="http://192.168.145.11/tag/zf2/">zf2</a>,    <a href="http://192.168.145.11/tag/rabbitmq/">rabbitmq</a>,    <a href="http://192.168.145.11/tag/django/">django</a>,    <a href="http://192.168.145.11/tag/celery/">celery</a>,    <a href="http://192.168.145.11/tag/email/">email</a>,    <a href="http://192.168.145.11/tag/api/">api</a>,    <a href="http://192.168.145.11/tag/postgis/">postgis</a>,    <a href="http://192.168.145.11/tag/ses/">ses</a>,    <a href="http://192.168.145.11/tag/gae/">gae</a>,    <a href="http://192.168.145.11/tag/datetime/">datetime</a>,    <a href="http://192.168.145.11/tag/bugsnag/">bugsnag</a>  </section>
+
+
+
+  <section>
+    <h1>GitHub Repos</h1>
+    <ul id="gh_repos">
+      <li class="loading">Status updating...</li>
+    </ul>
+    <script type="text/javascript">
+      $.domReady(function(){
+          if (!window.jXHR){
+              var jxhr = document.createElement('script');
+              jxhr.type = 'text/javascript';
+              jxhr.src = 'http://192.168.145.11/theme/js/jXHR.js';
+              var s = document.getElementsByTagName('script')[0];
+              s.parentNode.insertBefore(jxhr, s);
+          }
+
+          github.showRepos({
+              user: 'pixeldomain',
+              count: 5,
+              skip_forks: false,
+              target: '#gh_repos'
+          });
+      });
+    </script>
+    <script src="http://192.168.145.11/theme/js/github.js" type="text/javascript"> </script>
+  </section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      var widgetId = '465087062681456640',
+          domId = 'tweets',
+          count = 5,
+          hyperlinkUrlsPlus = true,
+          showUserPhoto = false,
+          timeOfTweet = true,
+          dateFormat = 'default',
+          showRetweets = false,
+          customOutputFn = null,
+          showReplyRetweetButtons = false;
+
+      twitterFetcher.fetch(
+        widgetId,
+        domId,
+        count,
+        hyperlinkUrlsPlus,
+        showUserPhoto,
+        timeOfTweet,
+        dateFormat,
+        showRetweets,
+        customOutputFn,
+        showReplyRetweetButtons
+      );
+    });
+  </script>
+  <script src="/theme/js/twitter.js" type="text/javascript"> </script>
+    <p>Follow <a href="http://twitter.com/DarrenJONeill">@DarrenJONeill</a></p>
+</section>
+</aside>    </div>
+  </div>
+  <footer role="contentinfo"><p>
+      Copyright &copy; 2014 - Darren O'Neill -
+  <span class="credit">Powered by <a href="http://getpelican.com">Pelican</a></span>
+</p></footer>
+
+<script>
+    var links = document.links;
+
+    for (var i = 0, linksLength = links.length; i < linksLength; i++) {
+       if (links[i].hostname != window.location.hostname) {
+           links[i].target = '_blank';
+       }
+    }
+</script></body>
+</html>
