@@ -4,7 +4,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Darren O'Neill - Authors</title>
+  <title>Introducing django-datetime-utc - Darren O'Neill</title>
   <meta name="author" content="Darren O'Neill">
 
 
@@ -51,7 +51,52 @@
 </ul></nav>
   <div id="main">
     <div id="content">
-    <h1>Authors on Darren O'Neill</h1>        <li><a href="http://darrenoneill.co.uk/author/darren-oneill/">Darren O'Neill</a> (7)</li>
+<div>
+  <article class="hentry" role="article">
+<header>
+      <h1 class="entry-title">Introducing django-datetime-utc</h1>
+      <p class="meta"><time datetime="2014-05-24T00:00:00" pubdate>Sat 24 May 2014</time></p>
+</header>
+
+  <div class="entry-content"><p>Today I submitted a package to <a href="https://pypi.python.org/pypi">PyPi</a> called <code>django-datetime-utc</code>. You
+can install it via Pip:</p>
+<div class="highlight"><pre><span class="err">$</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">django</span><span class="o">-</span><span class="n">datetime</span><span class="o">-</span><span class="n">utc</span>
+</pre></div>
+
+
+<p>This package provides <code>DateTimeUTCField</code>, a naive datetime model field. In
+PostgreSQL this translates to the field <em>timestamp without time zone</em>. All
+timestamps are saved in UTC.</p>
+<p>I created this because the problem with using Django's <code>DateTimeField</code> is
+unless the default time zone on your (PostgreSQL) database server is set to UTC
+it doesn't matter which TZ settings you select in Django, PostgreSQL will save
+all timestamps in local time with an offset.</p>
+<p>This new field:</p>
+<ul>
+<li>Supports the default <code>DateTimeField</code> options such as <code>auto_now_add</code> and
+<code>auto_now</code></li>
+<li>Works with <a href="http://south.aeracode.org/">South</a></li>
+<li>Saves all timestamps in UTC</li>
+<li>Values automatically converted to local time (specified by <code>TIME_ZONE</code> in
+your project settings.py) in forms and templates</li>
+</ul>
+<p>To find out more head over to the project pages on <a href="https://github.com/pixeldomain/django-datetime-utc">GitHub</a> and
+<a href="https://pypi.python.org/pypi/django-datetime-utc">PyPi</a> where the latest installation and usage instructions can be
+found.</p></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard"></span>
+<time datetime="2014-05-24T00:00:00" pubdate>Sat 24 May 2014</time>  <span class="categories">
+    <a class="category" href="http://darrenoneill.co.uk/tag/django/">django</a>
+    <a class="category" href="http://darrenoneill.co.uk/tag/datetime/">datetime</a>
+    <a class="category" href="http://darrenoneill.co.uk/tag/utc/">utc</a>
+    <a class="category" href="http://darrenoneill.co.uk/tag/postgresql/">postgresql</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
 <aside class="sidebar">
   <section>
     <h1>Recent Posts</h1>

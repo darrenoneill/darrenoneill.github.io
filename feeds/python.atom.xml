@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Darren O'Neill</title><link href="http://darrenoneill.co.uk/" rel="alternate"></link><link href="http://darrenoneill.co.uk/feeds/python.atom.xml" rel="self"></link><id>http://darrenoneill.co.uk/</id><updated>2014-05-05T00:00:00+01:00</updated><entry><title>Building an API with Django and GAE Cloud Endpoints</title><link href="http://darrenoneill.co.uk/post/django-api-gae-cloud-endpoints/" rel="alternate"></link><updated>2014-05-05T00:00:00+01:00</updated><author><name>Darren O'Neill</name></author><id>tag:darrenoneill.co.uk,2014-05-05:post/django-api-gae-cloud-endpoints/</id><summary type="html">&lt;p&gt;Typically when you build a Django site and you need to expose your application's
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Darren O'Neill</title><link href="http://darrenoneill.co.uk/" rel="alternate"></link><link href="http://darrenoneill.co.uk/feeds/python.atom.xml" rel="self"></link><id>http://darrenoneill.co.uk/</id><updated>2014-05-24T00:00:00+01:00</updated><entry><title>Introducing django-datetime-utc</title><link href="http://darrenoneill.co.uk/post/introducing-django-datetime-utc/" rel="alternate"></link><updated>2014-05-24T00:00:00+01:00</updated><author><name>Darren O'Neill</name></author><id>tag:darrenoneill.co.uk,2014-05-24:post/introducing-django-datetime-utc/</id><summary type="html">&lt;p&gt;Today I submitted a package to &lt;a href="https://pypi.python.org/pypi"&gt;PyPi&lt;/a&gt; called &lt;code&gt;django-datetime-utc&lt;/code&gt;. You
+can install it via Pip:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;django&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;datetime&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;utc&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This package provides &lt;code&gt;DateTimeUTCField&lt;/code&gt;, a naive datetime model field. In
+PostgreSQL this translates to the field &lt;em&gt;timestamp without time zone&lt;/em&gt;. All
+timestamps are saved in UTC.&lt;/p&gt;
+&lt;p&gt;I created this because the problem with using Django's &lt;code&gt;DateTimeField&lt;/code&gt; is
+unless the default time zone on your (PostgreSQL) database server is set to UTC
+it doesn't matter which TZ settings you select in Django, PostgreSQL will save
+all timestamps in local time with an offset.&lt;/p&gt;
+&lt;p&gt;This new field:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Supports the default &lt;code&gt;DateTimeField&lt;/code&gt; options such as &lt;code&gt;auto_now_add&lt;/code&gt; and
+&lt;code&gt;auto_now&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;Works with &lt;a href="http://south.aeracode.org/"&gt;South&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Saves all timestamps in UTC&lt;/li&gt;
+&lt;li&gt;Values automatically converted to local time (specified by &lt;code&gt;TIME_ZONE&lt;/code&gt; in
+your project settings.py) in forms and templates&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;To find out more head over to the project pages on &lt;a href="https://github.com/pixeldomain/django-datetime-utc"&gt;GitHub&lt;/a&gt; and
+&lt;a href="https://pypi.python.org/pypi/django-datetime-utc"&gt;PyPi&lt;/a&gt; where the latest installation and usage instructions can be
+found.&lt;/p&gt;</summary><category term="django"></category><category term="datetime"></category><category term="utc"></category><category term="postgresql"></category></entry><entry><title>Building an API with Django and GAE Cloud Endpoints</title><link href="http://darrenoneill.co.uk/post/django-api-gae-cloud-endpoints/" rel="alternate"></link><updated>2014-05-05T00:00:00+01:00</updated><author><name>Darren O'Neill</name></author><id>tag:darrenoneill.co.uk,2014-05-05:post/django-api-gae-cloud-endpoints/</id><summary type="html">&lt;p&gt;Typically when you build a Django site and you need to expose your application's
 data in the form of a RESTful API you would use something like the excellent
 &lt;a href="http://www.django-rest-framework.org/"&gt;Django REST Framework&lt;/a&gt;. However if you
 are hosting your site on

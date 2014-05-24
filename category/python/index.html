@@ -55,6 +55,28 @@
   		<article>
 <header>
       <h1 class="entry-title">
+        <a href="http://darrenoneill.co.uk/post/introducing-django-datetime-utc/">Introducing django-datetime-utc</a>
+      </h1>
+      <p class="meta"><time datetime="2014-05-24T00:00:00" pubdate>Sat 24 May 2014</time></p>
+</header>
+
+  <div class="entry-content"><p>Today I submitted a package to <a href="https://pypi.python.org/pypi">PyPi</a> called <code>django-datetime-utc</code>. You
+can install it via Pip:</p>
+<div class="highlight"><pre><span class="err">$</span> <span class="n">pip</span> <span class="n">install</span> <span class="n">django</span><span class="o">-</span><span class="n">datetime</span><span class="o">-</span><span class="n">utc</span>
+</pre></div>
+
+
+<p>This package provides <code>DateTimeUTCField</code>, a naive datetime model field. In
+PostgreSQL this translates to the field <em>timestamp without time zone</em>. All
+timestamps are saved in UTC.</p>
+<p>I created this because ...</p></div>
+  <footer>
+    <a rel="full-article" href="http://darrenoneill.co.uk/post/introducing-django-datetime-utc/">Read On &crarr;</a>
+  </footer>
+  		</article>
+  		<article>
+<header>
+      <h1 class="entry-title">
         <a href="http://darrenoneill.co.uk/post/django-api-gae-cloud-endpoints/">Building an API with Django and GAE Cloud Endpoints</a>
       </h1>
       <p class="meta"><time datetime="2014-05-05T00:00:00" pubdate>Mon 05 May 2014</time></p>
@@ -123,6 +145,9 @@ use South / Django's <code>syncdb</code>. SQL shown for reference:</p>
   <section>
     <h1>Recent Posts</h1>
     <ul id="recent_posts">
+      <li class="post">
+          <a href="http://darrenoneill.co.uk/post/introducing-django-datetime-utc/">Introducing django-datetime-utc</a>
+      </li>
       <li class="post">
           <a href="http://darrenoneill.co.uk/post/django-api-gae-cloud-endpoints/">Building an API with Django and GAE Cloud Endpoints</a>
       </li>
