@@ -4,7 +4,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Darren O'Neill - geodjango</title>
+  <title>Darren O'Neill - vagrant</title>
   <meta name="author" content="Darren O'Neill">
 
 
@@ -55,24 +55,18 @@
   		<article>
 <header>
       <h1 class="entry-title">
-        <a href="http://darrenoneill.co.uk/post/using-postgis-and-geodjango-find-nearest-neighbour/">Using PostGIS and GeoDjango to find your nearest neighbour</a>
+        <a href="http://darrenoneill.co.uk/post/connecting-to-a-vagrant-database-using-0xDBE/">Connecting to a Vagrant database using 0xDBE</a>
       </h1>
-      <p class="meta"><time datetime="2012-07-01T00:00:00" pubdate>Sun 01 July 2012</time></p>
+      <p class="meta"><time datetime="2014-06-21T00:00:00" pubdate>Sat 21 June 2014</time></p>
 </header>
 
-  <div class="entry-content"><p>Firstly create a database table to hold points of interest. You should probably
-use South / Django's <code>syncdb</code>. SQL shown for reference:</p>
-<div class="highlight"><pre><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">store</span> <span class="p">(</span>
-    <span class="n">id</span> <span class="nb">integer</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-    <span class="k">name</span> <span class="nb">character</span> <span class="k">varying</span><span class="p">(</span><span class="mf">100</span><span class="p">),</span>
-    <span class="k">location</span> <span class="n">geography</span><span class="p">(</span><span class="nb">Point</span><span class="p">,</span><span class="mf">4326</span><span class="p">),</span>
-    <span class="n">longitude</span> <span class="nb">double precision</span><span class="p">,</span>
-    <span class="n">latitude</span> <span class="nb">double precision</span>
-<span class="p">);</span>
-
-<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">store_location_idx</span> <span class="k">ON</span> <span class="n">store</span> <span class="k">USING</span> <span class="n">gist ...</span></pre></div></div>
+  <div class="entry-content"><p><a href="http://www.jetbrains.com/dbe/">0xDBE</a> is a new SQL editor from Jetbrains that is currently available as
+an Early Access Program (EAP). As a user of PyCharm I thought I would check it
+out.</p>
+<p>It seems a solid program but it can be a bit fiddly getting
+connected to a database in a Vagrant ...</p></div>
   <footer>
-    <a rel="full-article" href="http://darrenoneill.co.uk/post/using-postgis-and-geodjango-find-nearest-neighbour/">Read On &crarr;</a>
+    <a rel="full-article" href="http://darrenoneill.co.uk/post/connecting-to-a-vagrant-database-using-0xDBE/">Read On &crarr;</a>
   </footer>
   		</article>
 <div class="pagination">
@@ -84,7 +78,7 @@ use South / Django's <code>syncdb</code>. SQL shown for reference:</p>
     <h1>Recent Posts</h1>
     <ul id="recent_posts">
       <li class="post">
-          <a href="http://darrenoneill.co.uk/post/using-postgis-and-geodjango-find-nearest-neighbour/">Using PostGIS and GeoDjango to find your nearest neighbour</a>
+          <a href="http://darrenoneill.co.uk/post/connecting-to-a-vagrant-database-using-0xDBE/">Connecting to a Vagrant database using 0xDBE</a>
       </li>
     </ul>
   </section>

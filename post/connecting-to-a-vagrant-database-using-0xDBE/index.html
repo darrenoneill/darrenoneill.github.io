@@ -4,7 +4,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Darren O'Neill - geodjango</title>
+  <title>Connecting to a Vagrant database using 0xDBE - Darren O'Neill</title>
   <meta name="author" content="Darren O'Neill">
 
 
@@ -51,40 +51,70 @@
 </ul></nav>
   <div id="main">
     <div id="content">
-<div class="blog-index">
-  		<article>
+<div>
+  <article class="hentry" role="article">
 <header>
-      <h1 class="entry-title">
-        <a href="http://darrenoneill.co.uk/post/using-postgis-and-geodjango-find-nearest-neighbour/">Using PostGIS and GeoDjango to find your nearest neighbour</a>
-      </h1>
-      <p class="meta"><time datetime="2012-07-01T00:00:00" pubdate>Sun 01 July 2012</time></p>
+      <h1 class="entry-title">Connecting to a Vagrant database using 0xDBE</h1>
+      <p class="meta"><time datetime="2014-06-21T00:00:00" pubdate>Sat 21 June 2014</time></p>
 </header>
 
-  <div class="entry-content"><p>Firstly create a database table to hold points of interest. You should probably
-use South / Django's <code>syncdb</code>. SQL shown for reference:</p>
-<div class="highlight"><pre><span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">store</span> <span class="p">(</span>
-    <span class="n">id</span> <span class="nb">integer</span> <span class="k">NOT</span> <span class="k">NULL</span><span class="p">,</span>
-    <span class="k">name</span> <span class="nb">character</span> <span class="k">varying</span><span class="p">(</span><span class="mf">100</span><span class="p">),</span>
-    <span class="k">location</span> <span class="n">geography</span><span class="p">(</span><span class="nb">Point</span><span class="p">,</span><span class="mf">4326</span><span class="p">),</span>
-    <span class="n">longitude</span> <span class="nb">double precision</span><span class="p">,</span>
-    <span class="n">latitude</span> <span class="nb">double precision</span>
-<span class="p">);</span>
+  <div class="entry-content"><p><a href="http://www.jetbrains.com/dbe/">0xDBE</a> is a new SQL editor from Jetbrains that is currently available as
+an Early Access Program (EAP). As a user of PyCharm I thought I would check it
+out.</p>
+<p>It seems a solid program but it can be a bit fiddly getting
+connected to a database in a Vagrant virtual machine. You have to make sure you
+are using the correct private key for the <code>vagrant</code> user. Below are some
+instructions for Mac users to connect to a PostgreSQL database.
+The SSH/SSL settings should be the same for MySQL etc.:</p>
+<ol>
+<li>Make sure you have the PostgreSQL driver installed</li>
+<li>Create a new PostgreSQL data source and under the "Database" tab fill in the
+database name and access credentials. You can leave the default host (localhost)
+and port (5432).</li>
+<li>Under the SSH/SSL tab check the "Use SSH tunnel" box and set:<div class="highlight"><pre><span class="n">Proxy</span> <span class="n">host</span><span class="o">:</span>  <span class="mf">127.0.0.1</span>
+<span class="nl">Port:</span>        <span class="mi">2222</span>
+<span class="n">Proxy</span> <span class="n">user</span><span class="o">:</span>  <span class="n">vagrant</span>
+<span class="n">Auth</span> <span class="n">type</span><span class="o">:</span>   <span class="n">Key</span> <span class="n">pair</span> <span class="p">(</span><span class="n">OpenSSH</span><span class="p">)</span>
+<span class="n">Private</span> <span class="n">key</span><span class="o">:</span> <span class="o">/</span><span class="n">Users</span><span class="o">/</span><span class="n">username</span><span class="o">/</span><span class="p">.</span><span class="n">vagrant</span><span class="p">.</span><span class="n">d</span><span class="o">/</span><span class="n">insecure_private_key</span>
+</pre></div>
 
-<span class="k">CREATE</span> <span class="k">INDEX</span> <span class="n">store_location_idx</span> <span class="k">ON</span> <span class="n">store</span> <span class="k">USING</span> <span class="n">gist ...</span></pre></div></div>
-  <footer>
-    <a rel="full-article" href="http://darrenoneill.co.uk/post/using-postgis-and-geodjango-find-nearest-neighbour/">Read On &crarr;</a>
-  </footer>
-  		</article>
-<div class="pagination">
 
-  <br />
-</div></div>
+</li>
+</ol>
+<p>Replace <code>username</code> with your Mac username.</p>
+<p>That should be it!</p></div>
+    <footer>
+<p class="meta">
+  <span class="byline author vcard"></span>
+<time datetime="2014-06-21T00:00:00" pubdate>Sat 21 June 2014</time>  <span class="categories">
+    <a class="category" href="http://darrenoneill.co.uk/tag/vagrant/">vagrant</a>
+    <a class="category" href="http://darrenoneill.co.uk/tag/postgresql/">postgresql</a>
+    <a class="category" href="http://darrenoneill.co.uk/tag/0xdbe/">0xdbe</a>
+    <a class="category" href="http://darrenoneill.co.uk/tag/sql/">sql</a>
+  </span>
+</p><div class="sharing">
+</div>    </footer>
+  </article>
+
+</div>
 <aside class="sidebar">
   <section>
     <h1>Recent Posts</h1>
     <ul id="recent_posts">
       <li class="post">
-          <a href="http://darrenoneill.co.uk/post/using-postgis-and-geodjango-find-nearest-neighbour/">Using PostGIS and GeoDjango to find your nearest neighbour</a>
+          <a href="http://darrenoneill.co.uk/post/connecting-to-a-vagrant-database-using-0xDBE/">Connecting to a Vagrant database using 0xDBE</a>
+      </li>
+      <li class="post">
+          <a href="http://darrenoneill.co.uk/post/introducing-django-datetime-utc/">Introducing django-datetime-utc</a>
+      </li>
+      <li class="post">
+          <a href="http://darrenoneill.co.uk/post/django-api-gae-cloud-endpoints/">Building an API with Django and GAE Cloud Endpoints</a>
+      </li>
+      <li class="post">
+          <a href="http://darrenoneill.co.uk/post/sending-triggered-emails-with-django-celery-ses/">Sending triggered emails with Django using Celery and SES</a>
+      </li>
+      <li class="post">
+          <a href="http://darrenoneill.co.uk/post/real-time-web-apps-postgresql-and-node/">Real time web apps with PostgreSQL and Node.js</a>
       </li>
     </ul>
   </section>

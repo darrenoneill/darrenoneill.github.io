@@ -1,5 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>Darren O'Neill</title><link href="http://darrenoneill.co.uk/" rel="alternate"></link><link href="http://darrenoneill.co.uk/feeds/all.atom.xml" rel="self"></link><id>http://darrenoneill.co.uk/</id><updated>2014-05-24T00:00:00+01:00</updated><entry><title>Introducing django-datetime-utc</title><link href="http://darrenoneill.co.uk/post/introducing-django-datetime-utc/" rel="alternate"></link><updated>2014-05-24T00:00:00+01:00</updated><author><name>Darren O'Neill</name></author><id>tag:darrenoneill.co.uk,2014-05-24:post/introducing-django-datetime-utc/</id><summary type="html">&lt;p&gt;Today I submitted a package to &lt;a href="https://pypi.python.org/pypi"&gt;PyPi&lt;/a&gt; called &lt;code&gt;django-datetime-utc&lt;/code&gt;. You
+<feed xmlns="http://www.w3.org/2005/Atom"><title>Darren O'Neill</title><link href="http://darrenoneill.co.uk/" rel="alternate"></link><link href="http://darrenoneill.co.uk/feeds/all.atom.xml" rel="self"></link><id>http://darrenoneill.co.uk/</id><updated>2014-06-21T00:00:00+01:00</updated><entry><title>Connecting to a Vagrant database using 0xDBE</title><link href="http://darrenoneill.co.uk/post/connecting-to-a-vagrant-database-using-0xDBE/" rel="alternate"></link><updated>2014-06-21T00:00:00+01:00</updated><author><name>Darren O'Neill</name></author><id>tag:darrenoneill.co.uk,2014-06-21:post/connecting-to-a-vagrant-database-using-0xDBE/</id><summary type="html">&lt;p&gt;&lt;a href="http://www.jetbrains.com/dbe/"&gt;0xDBE&lt;/a&gt; is a new SQL editor from Jetbrains that is currently available as
+an Early Access Program (EAP). As a user of PyCharm I thought I would check it
+out.&lt;/p&gt;
+&lt;p&gt;It seems a solid program but it can be a bit fiddly getting
+connected to a database in a Vagrant virtual machine. You have to make sure you
+are using the correct private key for the &lt;code&gt;vagrant&lt;/code&gt; user. Below are some
+instructions for Mac users to connect to a PostgreSQL database.
+The SSH/SSL settings should be the same for MySQL etc.:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Make sure you have the PostgreSQL driver installed&lt;/li&gt;
+&lt;li&gt;Create a new PostgreSQL data source and under the "Database" tab fill in the
+database name and access credentials. You can leave the default host (localhost)
+and port (5432).&lt;/li&gt;
+&lt;li&gt;Under the SSH/SSL tab check the "Use SSH tunnel" box and set:&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="n"&gt;Proxy&lt;/span&gt; &lt;span class="n"&gt;host&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;  &lt;span class="mf"&gt;127.0.0.1&lt;/span&gt;
+&lt;span class="nl"&gt;Port:&lt;/span&gt;        &lt;span class="mi"&gt;2222&lt;/span&gt;
+&lt;span class="n"&gt;Proxy&lt;/span&gt; &lt;span class="n"&gt;user&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;  &lt;span class="n"&gt;vagrant&lt;/span&gt;
+&lt;span class="n"&gt;Auth&lt;/span&gt; &lt;span class="n"&gt;type&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt;   &lt;span class="n"&gt;Key&lt;/span&gt; &lt;span class="n"&gt;pair&lt;/span&gt; &lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;OpenSSH&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
+&lt;span class="n"&gt;Private&lt;/span&gt; &lt;span class="n"&gt;key&lt;/span&gt;&lt;span class="o"&gt;:&lt;/span&gt; &lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;Users&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;username&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;vagrant&lt;/span&gt;&lt;span class="p"&gt;.&lt;/span&gt;&lt;span class="n"&gt;d&lt;/span&gt;&lt;span class="o"&gt;/&lt;/span&gt;&lt;span class="n"&gt;insecure_private_key&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Replace &lt;code&gt;username&lt;/code&gt; with your Mac username.&lt;/p&gt;
+&lt;p&gt;That should be it!&lt;/p&gt;</summary><category term="vagrant"></category><category term="postgresql"></category><category term="0xdbe"></category><category term="sql"></category></entry><entry><title>Introducing django-datetime-utc</title><link href="http://darrenoneill.co.uk/post/introducing-django-datetime-utc/" rel="alternate"></link><updated>2014-05-24T00:00:00+01:00</updated><author><name>Darren O'Neill</name></author><id>tag:darrenoneill.co.uk,2014-05-24:post/introducing-django-datetime-utc/</id><summary type="html">&lt;p&gt;Today I submitted a package to &lt;a href="https://pypi.python.org/pypi"&gt;PyPi&lt;/a&gt; called &lt;code&gt;django-datetime-utc&lt;/code&gt;. You
 can install it via Pip:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span class="err"&gt;$&lt;/span&gt; &lt;span class="n"&gt;pip&lt;/span&gt; &lt;span class="n"&gt;install&lt;/span&gt; &lt;span class="n"&gt;django&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;datetime&lt;/span&gt;&lt;span class="o"&gt;-&lt;/span&gt;&lt;span class="n"&gt;utc&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
